@@ -22,7 +22,7 @@ app.post("/sendMessage", async (req, res) => {
     const usersCollection = db.collection("users"); 
     const messagesCollection = db.collection("messages"); 
 
-    // Validate sender and receiver IDs
+    // Validate IDs
     const sender = await usersCollection.findOne({ _id: senderId });
     const receiver = await usersCollection.findOne({ _id: receiverId });
 
@@ -30,7 +30,7 @@ app.post("/sendMessage", async (req, res) => {
       return res.status(400).json({ error: "Invalid sender or receiver ID." });
     }
 
-    // Save the message to the messages collection
+    // Save the message
     const savedMessage = await messagesCollection.insertOne({
       senderId,
       receiverId,
@@ -38,7 +38,7 @@ app.post("/sendMessage", async (req, res) => {
       timestamp: new Date(),
     });
 
-    // Emit the message to connected clients
+    // Emit the message
     io.emit("receiveMessage", savedMessage);
 
     // Return the saved message
